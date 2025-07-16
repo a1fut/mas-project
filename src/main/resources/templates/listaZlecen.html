@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Aktualne Zlecenia</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+        }
+
+        .nawigacja {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+
+        .btn {
+            text-decoration: none;
+            background: black;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+
+        }
+
+        .kontener {
+            padding: 2rem;
+        }
+
+        .zlecenie {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            border: 1px solid black;
+            margin-bottom: 2rem;
+        }
+
+        .zlecenie > div {
+            border: 1px solid black;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .zlecenie .opis {
+            grid-column: span 2;
+            text-align: left;
+        }
+
+        .zlecenie .actions {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .zlecenie .actions button {
+            background: black;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+        }
+        .wybor-recepcjonistow{
+            padding: 1rem;
+            border-top: 2px black solid;
+        }
+
+        a{
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="nawigacja">
+    <div class="zalogowany">
+        <strong>(Zalogowano) Recepcjonista:</strong>
+        <span th:text="${zalogowany.getImie()} + ' ' + ${zalogowany.getNazwisko()}"></span>
+    </div>
+    <a class="btn" th:href="@{|/recepcjonisci/${zalogowany.getId()}/zlecenia|}">
+        Wyświetl moje zlecenia
+    </a>
+    <a class="btn" th:href="@{|/recepcjonisci/${zalogowany.getId()}/zlecenia/nowezlecenie|}">
+        Dodaj nowe zlecenie
+    </a>
+</div>
+
+<div class="kontener">
+    <h1>Aktualne Zlecenia:</h1>
+    <div class="creator">
+        Twórca: <span th:text="${tworcaZgloszen.getImie()} + ' ' + ${tworcaZgloszen.getNazwisko()} + ' (Recepcjonista)'">
+      </span>
+    </div>
+
+    <div th:each="z : ${zlecenia}" class="zlecenie">
+        <div><strong>Numer zlecenia</strong><br/><span th:text="${z.getId()}">1234</span></div>
+        <div><strong>Data startu</strong><br/><span th:text="${#temporals.format(z.getDataStartu(),'dd/MM/yyyy')}">01/01/2002</span>
+        </div>
+        <div>
+            <strong>Data zakończenia</strong><br/>
+            <span th:text="${z.getDataZakonczenia()!=null? #temporals.format(z.dataZakonczenia,'dd/MM/yyyy') : '-'}">-</span>
+        </div>
+        <div><strong>Status</strong><br/><span th:text="${z.getStatusZlecenia()}">Nowe</span></div>
+        <div><strong>Cena końcowa</strong><br/><span th:text="${z.getCenaKoncowa()} + ' PLN'">0.00 PLN</span></div>
+        <div><strong>Wysokość zniżki</strong><br/><span th:text="${z.getWysokoscZnizki()} + '%'">5%</span></div>
+
+        <div class="opis">
+            <strong>Opis:</strong><br/>
+            <span th:text="${z.getOpis()}">
+          Lorem ipsum dolor sit amet, consectetur...
+        </span>
+        </div>
+        <div class="czy-oplacone">
+            <strong>Czy opłacone?</strong><br/>
+            <span th:text="${z.isCzyOplacone()}">false</span>
+        </div>
+        <div class="klient">
+            <strong>Klient</strong><br/>
+            <span th:text="${z.getPojazd().getKlient().getImie()} + ' ' + ${z.getPojazd().getKlient().getNazwisko()}">Maciej Alfut</span><br/>
+            <span th:text="${z.getPojazd().getKlient().getNrTelefonu()}">606890890</span>
+        </div>
+        <div class="pojazd">
+            <strong>Pojazd</strong><br/>
+            <span th:text="${z.getPojazd().getMarka()} + ' ' + ${z.getPojazd().getModel()}">BMW Serii 1</span><br/>
+            <span th:text="${z.getPojazd().getRodzajPaliwa()}">Diesel</span><br/>
+            <span th:text="${z.getPojazd().getNumerRejestracyjny()}">WSE5SX3</span>
+        </div>
+        <div class="mechanik">
+            <strong>Mechanik</strong><br/>
+            <span th:text="${z.getMechanik().getImie()} + ' ' + ${z.getMechanik().getNazwisko()}">Jan Kowalski</span><br/>
+            <span th:text="${z.getMechanik().getNrTelefonu()}">531789213</span><br/>
+            <span th:text="${z.getMechanik().getStazPracy()} + ' lata doświadczenia'">2 lata doświadczenia</span><br/>
+            <span th:text="${z.getMechanik().getSpecjalizacja()}">Elektromechanik</span>
+        </div>
+
+        <div class="actions">
+            <form>
+                <button type="submit">Usuń</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="wybor-recepcjonistow">
+    <h2>Podgląd zleceń innych recepcjonistów:</h2>
+    <ul>
+        <li th:each="r : ${recepcjonisci}">
+            <a th:href="@{|/recepcjonisci/${zalogowany.id}/zlecenia/podejrzyj/${r.id}|}" th:text="${r.imie} + ' ' + ${r.nazwisko}"></a>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

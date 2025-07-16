@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wybierz recepcjonistę</title>
+    <style>
+        body{
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        ul{
+            border: black 1px solid;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li{
+            padding: 1em 5em;
+            border: black 2px solid;
+            list-style-type: none;
+        }
+
+        li:hover{
+            background: lightgrey;
+        }
+        a{
+            margin: 1em 5em;
+            color: black;
+            cursor: pointer;
+            text-decoration: none;
+            width: 100%;
+            height: 100%;
+        }
+
+
+
+    </style>
+</head>
+<body>
+<h1>Recepcjoniści</h1>
+<ul>
+    <li th:each="r : ${recepcjonisci}">
+        <a th:href="@{|/recepcjonisci/${r.id}/zlecenia|}"
+           th:text="${r.imie} + ' ' + ${r.nazwisko}"></a>
+    </li>
+</ul>
+</body>
+</html>

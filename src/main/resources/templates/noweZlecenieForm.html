@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nowe zlecenie serwisowe</title>
+    <style>
+        body {
+            font-family: sans-serif;
+
+        }
+
+        .section {
+            margin-bottom: 1.5em;
+            border: black 2px solid;
+            padding: 1.5em;
+            width: 50%;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        label {
+            display: block;
+            margin: .5em 0 .2em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: .4em;
+        }
+
+        .inline {
+            display: inline-block;
+            margin-right: 1em;
+        }
+
+        .error {
+            color: red;
+            font-size: .9em;
+        }
+
+        .btn {
+            text-decoration: none;
+            background: black;
+            color: white;
+            padding: .6em 1.2em;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="radio"]:checked:after {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Nowe zlecenie serwisowe</h1>
+<a class="btn" th:href="@{|/recepcjonisci/${recepcjonistaId}/zlecenia|}">
+    Powrót do moich zleceń
+</a>
+<form class="form" th:object="${form}"
+      th:action="@{|/recepcjonisci/${recepcjonistaId}/zlecenia/nowezlecenie|}"
+      method="post">
+
+
+    <!-- pojazd -->
+    <div class="section" id="sekcja-pojazd">
+        <h2>Pojazd</h2>
+        <label class="inline">
+            <input class="radio" type="radio" th:field="*{pojazdDto.czyIstnieje}" th:value="true"/> Istniejący
+        </label>
+        <label class="inline">
+            <input class="radio" type="radio" th:field="*{pojazdDto.czyIstnieje}" th:value="false" checked/> Nowy
+        </label>
+
+        <div id="istniejacy-pojazd">
+            <label for="pojazd"></label>
+            <select id="pojazd"
+                    th:field="*{pojazdDto.id}">
+                <option value="" selected>Wybierz istniejący pojazd</option>
+                <option th:each="p : ${pojazdy}"
+                        th:value="${p.id}"
+                        th:text="${p.marka} + ' ' + ${p.model} + ' (' + ${p.numerRejestracyjny} + ')'">
+                </option>
+            </select>
+        </div>
+
+        <div id="nowy-pojazd">
+            <label>
+                Marka:
+                <input type="text" th:field="*{pojazdDto.marka}" placeholder="Marka"/>
+            </label>
+            <div class="error" th:errors="*{pojazdDto.marka}"></div>
+            <label>
+                Model:
+                <input type="text" th:field="*{pojazdDto.model}" placeholder="Model"/>
+            </label>
+            <div class="error" th:errors="*{pojazdDto.model}"></div>
+            <label>
+                Rodzaj paliwa:
+                <select th:field="*{pojazdDto.rodzajPaliwa}">
+                    <option th:each="f: ${T(org.example.masimplementacja.enums.RodzajPaliwa).values()}"
+                            th:value="${f}" th:text="${f}"></option>
+                </select>
+            </label>
+            <label>
+                Numer rejestracyjny:
+                <input type="text" th:field="*{pojazdDto.numerRejestracyjny}" placeholder="Nr rejestracyjny"/>
+            </label>
+            <div class="error" th:errors="*{pojazdDto.numerRejestracyjny}"></div>
+
+        </div>
+    </div>
+
+
+    <!-- klient -->
+    <div class="section" id="sekcja-klient">
+        <h2>Klient</h2>
+        <label class="inline">
+            <input class="radio" type="radio" th:field="*{klientDto.czyIstnieje}" th:value="true"/> Istniejący
+        </label>
+        <label class="inline">
+            <input class="radio" type="radio" th:field="*{klientDto.czyIstnieje}" th:value="false"/> Nowy
+        </label>
+
+
+        <div id="istniejacy-klient">
+            <label for="klient"></label>
+            <select id="klient"
+                    th:field="*{klientDto.id}">
+                <option value="">Wybierz istniejącego klienta</option>
+                <option th:each="k : ${klienci}"
+                        th:value="${k.id}"
+                        th:text="${k.imie} + ' ' + ${k.nazwisko}">
+                </option>
+            </select>
+        </div>
+        <div id="nowy-klient">
+            <label>
+                Imię:
+                <input type="text" th:field="*{klientDto.imie}" placeholder="Imię"/>
+            </label>
+            <div class="error" th:errors="*{klientDto.imie}"></div>
+            <label>
+                Nazwisko:
+                <input type="text" th:field="*{klientDto.nazwisko}" placeholder="Nazwisko"/>
+            </label>
+            <div class="error" th:errors="*{klientDto.nazwisko}"></div>
+            <label>
+                Numer telefonu:
+                <input type="text" th:field="*{klientDto.nrTelefonu}" placeholder="Telefon"/>
+            </label>
+            <div class="error" th:errors="*{klientDto.nrTelefonu}"></div>
+        </div>
+    </div>
+
+    <!-- zlecenie -->
+    <div class="section">
+        <h2>Szczegóły zlecenia</h2>
+
+        <label>Data rozpoczęcia:
+            <input type="datetime-local" th:field="*{zlecenieDto.dataStartu}"/>
+        </label>
+        <div class="error" th:errors="*{zlecenieDto.dataStartu}"></div>
+
+        <label>Mechanik:
+            <select th:field="*{zlecenieDto.mechanikId}">
+                <option th:each="m : ${mechanicy}"
+                        th:value="${m.id}"
+                        th:text="${m.imie} + ' ' + ${m.nazwisko} + ' (' + ${m.specjalizacja} + ')'"></option>
+            </select>
+        </label>
+        <div class="error" th:errors="*{zlecenieDto.mechanikId}"></div>
+
+        <label>Opis:
+            <textarea rows="3" th:field="*{zlecenieDto.opis}"></textarea>
+        </label>
+        <div class="error" th:errors="*{zlecenieDto.opis}"></div>
+
+        <label>Zniżka [%]:
+            <input type="number" th:field="*{zlecenieDto.wysokoscZnizki}"/>
+        </label>
+        <div class="error" th:errors="*{zlecenieDto.wysokoscZnizki}"></div>
+    </div>
+
+    <button type="submit" class="btn">Zapisz zlecenie</button>
+</form>
+</body>
+
+<script th:inline="javascript">
+
+    // pobieramy pola na których będziemy działać
+    const radiosKlient = document.getElementsByName('klientDto.czyIstnieje')
+    const sekcjaKlientow = document.getElementById('sekcja-klient');
+    const nowyKlientInputs = document.getElementById('nowy-klient')
+    const istniejacyKlientInput = document.getElementById('istniejacy-klient')
+    const polaKlientow = ['imie', 'nazwisko', 'nrTelefonu'];
+
+    const nowyPojazdInputs = document.getElementById('nowy-pojazd')
+    const radiosPojazd = document.getElementsByName('pojazdDto.czyIstnieje');
+    const istniejacyPojazdInput = document.getElementById('istniejacy-pojazd');
+    const polaPojazdow = ['marka', 'model', 'numerRejestracyjny'];
+
+
+
+    // w zależności czy jest nowy pojazd czy już istniejący, pokazujemy lub ukrywamy pola klienta
+    function handleRadiosPojazd() {
+        let istnieje = radiosPojazd[0].checked
+        sekcjaKlientow.hidden = istnieje
+        nowyPojazdInputs.hidden = istnieje
+        istniejacyPojazdInput.hidden = !istnieje
+        if (istnieje) {
+            polaKlientow.forEach(pole => document.querySelector(`[name="klientDto.${pole}"]`).value = '.')
+            polaPojazdow.forEach(pole => document.querySelector(`[name="pojazdDto.${pole}"]`).value = '.......')
+
+        } else {
+            polaKlientow.forEach(pole => document.querySelector(`[name="klientDto.${pole}"]`).value = '')
+            polaPojazdow.forEach(pole => document.querySelector(`[name="pojazdDto.${pole}"]`).value = '')
+
+        }
+    }
+    // analogicznie do handleRadiosPojazd tylko do klienta
+    function handleRadiosKlient() {
+        let istnieje = radiosKlient[0].checked
+        nowyKlientInputs.hidden = istnieje
+        istniejacyKlientInput.hidden = !istnieje
+
+        if (istnieje)
+            polaKlientow.forEach(pole => document.querySelector(`[name="klientDto.${pole}"]`).value = '.')
+        else
+            polaKlientow.forEach(pole => document.querySelector(`[name="klientDto.${pole}"]`).value = '')
+    }
+
+    // nasłuchiwanie inputów radio na zmiany
+    radiosPojazd.forEach(radio => radio.addEventListener('change', handleRadiosPojazd))
+    radiosKlient.forEach(radio => radio.addEventListener('change', handleRadiosKlient))
+    handleRadiosPojazd()
+    handleRadiosKlient()
+</script>
+
+</html>
